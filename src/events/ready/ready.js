@@ -2,8 +2,8 @@ const BaseEvent = require('../../utils/structures/BaseEvent');
 const StateManager = require('../../utils/StateManager');
 const path = require("path");
 const fs = require("node:fs");
-const {Collection} = require("discord.js");
-require('dotenv').config({path: '../.env'});
+const { Collection } = require("discord.js");
+require('dotenv').config({ path: '../.env' });
 
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
@@ -131,7 +131,7 @@ module.exports = class ReadyEvent extends BaseEvent {
 
         // await client.application.commands.set([])
         // await client.guilds.cache.get('841990439384907807').commands.set([])
-        client.user.setActivity(`ping`, {type: 'LISTENING'});
+        client.user.setActivity(`ping`, { type: 'LISTENING' });
         console.log('Collection refreshed, no errors occurred while starting the program! SUCCESS!')
     }
 }
