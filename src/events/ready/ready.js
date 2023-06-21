@@ -1,16 +1,9 @@
 const BaseEvent = require('../../utils/structures/BaseEvent');
+const { REST, Routes, Collection, Client } = require('discord.js')
 const StateManager = require('../../utils/StateManager');
 const path = require("path");
 const fs = require("node:fs");
-const { Collection } = require("discord.js");
 require('dotenv').config({ path: '../.env' });
-
-const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v9');
-
-const rest = new REST({
-    version: '9'
-}).setToken(process.env.BOT_TOKEN);
 
 /*
     © Jonas Krödel 2022
@@ -32,88 +25,49 @@ module.exports = class ReadyEvent extends BaseEvent {
         // start of ( / ) cmds refreshing
 
         const commands = [];
-        const slashCommands = path.join(__dirname, '../../commands/slashCommands');
-        const commandFiles = fs.readdirSync(slashCommands).filter(file => file.endsWith('.js'));
+        // Grab all the command files from the commands directory you created earlier
+        const foldersPath = path.join(__dirname, '../../commands');
+        const commandFolders = fs.readdirSync(foldersPath);
 
-
-                for (const file of commandFiles) {
-                    const command = require(`${slashCommands}/${file}`);
+        for (const folder of commandFolders) {
+            // Grab all the command files from the commands directory you created earlier
+            const commandsPath = path.join(foldersPath, folder);
+            const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+            // Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
+            for (const file of commandFiles) {
+                const filePath = path.join(commandsPath, file);
+                const command = require(filePath);
+                if ('data' in command && 'execute' in command) {
                     commands.push(command.data.toJSON());
                     client.slashCommands.set(command.data.name, command);
-
+                } else {
+                    console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
                 }
-
-                try {
-                    await rest.put(
-                        Routes.applicationGuildCommands('1002128682552397824', '841990439384907807'),
-                        { body: commands },
-                    );
-
-                } catch (err) {
-                    console.log(err)
-                }
-
-        // End of section
-
-        // Start of checking if all Guild-Ids are in the database
-        const ids = client.guilds.cache.map(g => g.id);
-        let gids = [];
-
-        await StateManager.connection.query(
-            `SELECT COUNT(*) AS rowCount FROM GuildConfigurable`
-        ).then(async result => {
-            const row = result[0][0].rowCount;
-
-            for (let i = 0; i < row; i++)
-                await StateManager.connection.query(
-                    `SELECT guildId
-                     FROM GuildConfigurable LIMIT ${i},1`
-                ).then(result => {
-                    const gid = result[0][0].guildId;
-                    gids.push(gid);
-                });
-        });
-
-        for (let i = 0; i < ids.length; i++) {
-            await StateManager.connection.query(
-                `SELECT * FROM Guilds WHERE guildId = '${ids[i]}'`
-            ).then(result => {
-                try {
-                    if (!result[0][0]) {
-                        try {
-                            StateManager.connection.query(
-                                `INSERT INTO Guilds VALUES ('${ids[i]}', '${client.guilds.resolve(ids[i]).ownerId}')`
-                            );
-                        } catch (err) {
-                            console.log(err);
-                        }
-                    }
-                } catch (err) {
-                    console.log(err);
-                }
-            });
+            }
         }
 
-        for (let i = 0; i < ids.length; i++) {
-            await StateManager.connection.query(
-                `SELECT * FROM GuildConfigurable WHERE guildId = '${ids[i]}'`
-            ).then(result => {
-                try {
-                    if (!result[0][0]) {
-                        try {
-                            StateManager.connection.query(
-                                `INSERT INTO GuildConfigurable (guildId) VALUES ('${ids[i]}')`
-                            );
-                        } catch (err) {
-                            console.log(err);
-                        }
-                    }
-                } catch (err) {
-                    console.log(err);
-                }
-            });
-        }
+        // Construct and prepare an instance of the REST module
+        const rest = new REST().setToken(process.env.BOT_TOKEN);
+
+        // and deploy your commands!
+        (async () => {
+            try {
+                console.log(`Started refreshing ${commands.length} application (/) commands.`);
+
+                // The put method is used to fully refresh all commands in the guild with the current set
+                const data = await rest.put(
+                    Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
+                    { body: commands },
+                );
+
+                console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+            } catch (error) {
+                // And of course, make sure you catch and log any errors!
+                console.error(error);
+            }
+        })();
         // End of section
+        
         // Start of getting all data out of the database
 
         client.guilds.cache.forEach(guild => {
@@ -127,11 +81,6 @@ module.exports = class ReadyEvent extends BaseEvent {
             }).catch(err => console.log(err));
         });
         // End of section
-
-
-        // await client.application.commands.set([])
-        // await client.guilds.cache.get('841990439384907807').commands.set([])
         client.user.setActivity(`ping`, { type: 'LISTENING' });
-        console.log('Collection refreshed, no errors occurred while starting the program! SUCCESS!')
     }
 }

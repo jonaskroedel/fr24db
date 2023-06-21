@@ -1,7 +1,4 @@
-const { MessageEmbed } = require("discord.js");
-const { convertTime } = require("../../utils/convert.js");
-const { progressbar } = require("../../utils/progressbar.js");
-const {SlashCommandBuilder} = require('@discordjs/builders');
+const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 
 module.exports = {
     data: new SlashCommandBuilder()
