@@ -13,7 +13,6 @@ module.exports = {
             
     async execute(client, interaction) {
         this.connection = StateManager.connection;
-        console.log(interaction.options.getString('prefix'));
             const newPrefix = interaction.options.getString('prefix');
 
             if (newPrefix && newPrefix.length <= 10) {

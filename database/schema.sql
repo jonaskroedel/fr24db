@@ -15,6 +15,6 @@ CREATE TABLE Guilds (
 
 CREATE TABLE GuildConfigurable (
     guildId VARCHAR(100) NOT NULL PRIMARY KEY,
-    cmdPrefix VARCHAR(10) DEFAULT 'o!',
+    cmdPrefix VARCHAR(10) DEFAULT 'fr!',
     modLogId VARCHAR(100)
 );

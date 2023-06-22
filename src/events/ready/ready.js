@@ -67,6 +67,66 @@ module.exports = class ReadyEvent extends BaseEvent {
             }
         })();
         // End of section
+
+        // Start of checking if all Guild-Ids are in the database
+        const ids = client.guilds.cache.map(g => g.id);
+        let gids = [];
+
+        await StateManager.connection.query(
+            `SELECT COUNT(*) AS rowCount FROM GuildConfigurable`
+        ).then(async result => {
+            const row = result[0][0].rowCount;
+
+            for (let i = 0; i < row; i++)
+                await StateManager.connection.query(
+                    `SELECT guildId
+                     FROM GuildConfigurable LIMIT ${i},1`
+                ).then(result => {
+                    const gid = result[0][0].guildId;
+                    gids.push(gid);
+                });
+        });
+
+        for (let i = 0; i < ids.length; i++) {
+            await StateManager.connection.query(
+                `SELECT * FROM Guilds WHERE guildId = '${ids[i]}'`
+            ).then(result => {
+                try {
+                    if (!result[0][0]) {
+                        try {
+                            StateManager.connection.query(
+                                `INSERT INTO Guilds VALUES ('${ids[i]}', '${client.guilds.resolve(ids[i]).ownerId}')`
+                            );
+                        } catch (err) {
+                            console.log(err);
+                        }
+                    }
+                } catch (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        for (let i = 0; i < ids.length; i++) {
+            await StateManager.connection.query(
+                `SELECT * FROM GuildConfigurable WHERE guildId = '${ids[i]}'`
+            ).then(result => {
+                try {
+                    if (!result[0][0]) {
+                        try {
+                            StateManager.connection.query(
+                                `INSERT INTO GuildConfigurable (guildId) VALUES ('${ids[i]}')`
+                            );
+                        } catch (err) {
+                            console.log(err);
+                        }
+                    }
+                } catch (err) {
+                    console.log(err);
+                }
+            });
+        }
+        // End of section
         
         // Start of getting all data out of the database
 
