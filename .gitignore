@@ -1,3 +1,6 @@
 .env
 /src/commands/test
 node_modules
+docker
+help.txt
+mysql

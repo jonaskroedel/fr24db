@@ -6,7 +6,7 @@ const fs = require("node:fs");
 require('dotenv').config({ path: '../.env' });
 
 /*
-    © Jonas Krödel 2022
+    © Jonas Krödel 2023
     You may use and modify this code. You must mention me, the owner,
     and you may not pass off the code as your own!
 */
