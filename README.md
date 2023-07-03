@@ -4,11 +4,11 @@
 </h1>
 
 
-##About
+## About
 
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren
+Flightradar24 Bot is an unofficial Discord bot designed to provide users with the ability to view flight details from <a href=https://flightradar24.com>Flightradar24</a>. It is a versatile bot that can be used across multiple guilds, offering a wide range of customization options.
 
-##Installation
+## Installation
 
 You can add fr24 to your server with <a href="#">this</a> link! Alternatively, you can clone this repository and host the bot yourself.
 
@@ -30,6 +30,7 @@ to get all the dependencies and packages. You need [Node.js](https://nodejs.org/
 
 ## Setting Up
 
+
 You have to create a ``.env`` file in your root directory to run the bot (you can use the example file provided as a base). Your file should look something like this:
 
 ```
@@ -43,6 +44,14 @@ CLIENT_ID=YOUR_CLIENT_ID
 GUILD_ID=YOUR_TEsT_GUILD_ID
 ```
 
+Its important to execute the SQL-lines in ``./database/schema.sql``. If you dont know what this does, dont change anything or it will not work.
 
+## Legal
 
-*Please be aware that this bot does not endorse, or have any official affiliation with FlightRadar24. It is an independent project and its functionalities are not endorsed, supported, or approved by FlightRadar24 or its affiliates.*
+*This bot is an independent project and is not affiliated with FlightRadar24 or any other organization. The information provided by this bot is for general informational purposes only and should not be considered as official or endorsed by FlightRadar24.*
+
+*The bot may include links or references to external websites or services for additional information. However, we do not have control over the content or accuracy of those websites. We are not liable for any illegal, inaccurate, or offensive content that may be published on such websites. The inclusion of any links or references does not imply a recommendation or endorsement of the views expressed within them.*
+
+*The usage of this bot is at your own will and risk. We make no warranties or representations regarding the completeness, accuracy, reliability, or suitability of the information provided. We will not be held liable for any loss or damage, including without limitation, indirect or consequential loss or damage, arising from the use of this bot.*
+
+*By using this bot, you acknowledge that the creators and developers cannot be held responsible for any consequences or damages resulting from its use. You agree to release us from any liability or claims arising out of your use of the bot.*
